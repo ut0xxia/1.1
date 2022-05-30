@@ -28,7 +28,7 @@ int curves_order(double x0, double y0, double a)
 	}
 	return round(sum / (2 * pi));
 }
-std::vector<std::complex<double>>FindRoots(double a, double eps, double x0, double y0, std::vector<std::complex<double>> &roots)
+void FindRoots(double a, double eps, double x0, double y0, std::vector<std::complex<double>> &roots)
 {
 	double sum = 0;
 	if (curves_order(x0, y0, a) >= 1)
@@ -45,17 +45,16 @@ std::vector<std::complex<double>>FindRoots(double a, double eps, double x0, doub
 				}
 			}
 			if (!is_find)
-				roots.push_back({(round(x0 / eps) * eps, round(y0 / eps) * eps)});
+				roots.emplace_back(round(x0 / eps) * eps, round(y0 / eps) * eps);
 		}
 		else
 		{
-			FindRoots(a / 2 + eps / 2, eps, x0 + a / 2, y0 + a / 2, roots);
-			FindRoots(a / 2 + eps / 2, eps, x0 + a / 2, y0 - a / 2, roots);
-			FindRoots(a / 2 + eps / 2, eps, x0 - a / 2, y0 + a / 2, roots);
-			FindRoots(a / 2 + eps / 2, eps, x0 - a / 2, y0 - a / 2, roots);
+			FindRoots(a / 2 + eps / 4, eps, x0 + a / 2, y0 + a / 2, roots);
+			FindRoots(a / 2 + eps / 4, eps, x0 + a / 2, y0 - a / 2, roots);
+			FindRoots(a / 2 + eps / 4, eps, x0 - a / 2, y0 + a / 2, roots);
+			FindRoots(a / 2 + eps / 4, eps, x0 - a / 2, y0 - a / 2, roots);
 		}
 	}
-	return roots;
 }
 
 void find_complex_roots(double a, double x0, double y0, double eps, std::string function)
@@ -63,9 +62,9 @@ void find_complex_roots(double a, double x0, double y0, double eps, std::string 
 	fp.Parse(function, "z");
 	std::complex<double>z = { x0, y0 };
 	std::vector<std::complex<double>> roots;
-	//Вывод
+	FindRoots(a, eps, x0, y0, roots);
 	for (int i = 0; i < roots.size(); i++) {
-		std::cout << FindRoots(a, eps, x0, y0, roots)[i] << std::endl;
+		std::cout << roots[i]<<std::endl;
 	}
 }
 int main()
@@ -81,5 +80,6 @@ int main()
 	std::cin >> eps;
 	std::cout << "Функция F(z) = ";
 	std::cin >> function;
+	find_complex_roots(a, x0, y0, eps, function);
 	return 0;
 }
